@@ -1,7 +1,7 @@
 #define BOARD "MEGA"
 
 #define LUEFTER_COUNT 1
-#define LUEFTER_STARTPIN 2
+#define LUEFTER_STARTPIN 9
 #define DEFAULT_LUEFTER_SPEED 128
 
 #define READY 202
@@ -32,6 +32,7 @@ void setup() {
     }
 
     for (int i = 0; i < LUEFTER_COUNT; i++) {
+        pinMode(luefter_pins[i], OUTPUT);
         luefter_pins[i] = LUEFTER_STARTPIN + i;
         luefter_speeds[i] = DEFAULT_LUEFTER_SPEED;
         analogWrite(luefter_pins[i], luefter_speeds[i]);
