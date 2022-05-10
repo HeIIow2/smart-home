@@ -1,20 +1,11 @@
 import serial
 import json
 from flask import Flask, request, render_template
+import serial.tools.list_ports
 
 app = Flask(__name__)
 
 RETRIES = 5
-
-def open_port(ser_: serial.Serial):
-    if not ser_.isOpen():
-        print("opening the port")
-        ser_.open()
-        error_code_ = b''
-        while error_code_ == b'':
-            error_code_ = ser.read(3)
-        print(error_code_)
-        print("port opened")
 
 def send(ser_: serial.Serial, msg: bytes):
     print(msg)
@@ -23,7 +14,7 @@ def send(ser_: serial.Serial, msg: bytes):
         ser_.open()
         error_code_ = b''
         while error_code_ == b'':
-            error_code_ = ser.read(3)
+            error_code_ = ser_.read(3)
         print(error_code_)
         print("port opened")
 
@@ -46,12 +37,16 @@ def set_luefter(ser_: serial.Serial, luefter_id: int, speed: int):
 ser = serial.Serial()
 with open("port.json", "r") as port_file:
     port_data = json.loads(port_file.read())
-    ser.port = port_data['port']
+    devices = [port.device for port in serial.tools.list_ports.comports()]
+    ports = [port for port in devices if port in ['/dev/ttyACM0','/dev/ttyUSB0']]
+    if len(ports) != 1:
+        raise Exception('cannot identify port to use')
+    port = ports[0]
+    ser.port = port
     ser.baudrate = port_data['baudrate']
     if port_data['timeout'] != -1:
         ser.timeout = port_data['timeout']
 
-    open_port(ser)
 
 @app.route('/')
 def my_form():
@@ -59,6 +54,7 @@ def my_form():
 
 @app.route('/', methods=['POST'])
 def my_form_post():
+
     form = request.form
     for key in form:
         if key.isnumeric() and form[key].isnumeric():
@@ -67,6 +63,7 @@ def my_form_post():
     return render_template('index.html')
 
 
+
 if __name__ == '__main__':
-    app.run(debug = True, host = "0.0.0.0", port = 3000)
+    app.run(port = 3000)
     ser.close()

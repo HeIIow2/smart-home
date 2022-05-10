@@ -1,5 +1,5 @@
 {
-  "port": "COM5",
+  "port": "/dev/serial1",
   "baudrate": 9600,
-  "timeout": -1
+  "timeout": 5
 }
