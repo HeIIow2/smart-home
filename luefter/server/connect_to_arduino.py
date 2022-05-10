@@ -71,8 +71,7 @@ with open("port.json", "r") as port_file:
             raise Exception('cannot identify port to use')
         port = ports[0]
 
-    ser.port = port_data['port']
-    ser.baudrate = port_data['baudrate']
+    ser.port = port
     if port_data['timeout'] != -1:
         ser.timeout = port_data['timeout']
 
@@ -86,7 +85,7 @@ def my_form():
 def my_form_post():
     form = request.form
     for key in form:
-        if key.isnumeric() and form[key].isnumeric():
+        if key.isnumeric() and form[key].isnumeric() and form[key] != "":
             set_luefter(ser, int(key), int(form[key]))
 
     return render_template('index.html')
