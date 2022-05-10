@@ -1,4 +1,6 @@
+import platform
 import serial
+import serial.tools.list_ports
 import json
 from flask import Flask, request, render_template
 
@@ -47,6 +49,28 @@ def set_luefter(ser_: serial.Serial, luefter_id: int, speed: int):
 ser = serial.Serial()
 with open("port.json", "r") as port_file:
     port_data = json.loads(port_file.read())
+    port = port_data["port"]
+
+    if platform.system() == "Windows":
+        potential_port = None
+
+        for port in serial.tools.list_ports.comports():
+            if port.name != "COM1":
+                potential_port = port.name
+            if port.name == port:
+                potential_port = port
+                break
+
+        if potential_port is None:
+            raise Exception("no port found")
+        port = potential_port
+    else:
+        devices = [port.device for port in serial.tools.list_ports.comports()]
+        ports = [port for port in devices if port in ['/dev/ttyACM0', '/dev/ttyUSB0']]
+        if len(ports) != 1:
+            raise Exception('cannot identify port to use')
+        port = ports[0]
+
     ser.port = port_data['port']
     ser.baudrate = port_data['baudrate']
     if port_data['timeout'] != -1:
@@ -63,8 +87,7 @@ def my_form_post():
     form = request.form
     for key in form:
         if key.isnumeric() and form[key].isnumeric():
-            pass
-            # set_luefter(ser, int(key), int(form[key]))
+            set_luefter(ser, int(key), int(form[key]))
 
     return render_template('index.html')
 

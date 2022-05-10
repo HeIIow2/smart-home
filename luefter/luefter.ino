@@ -1,3 +1,5 @@
+#define BOARD "MEGA"
+
 #define LUEFTER_COUNT 1
 #define LUEFTER_STARTPIN 2
 #define DEFAULT_LUEFTER_SPEED 128
@@ -16,8 +18,18 @@ int luefter_speeds[LUEFTER_COUNT];
 void setup() {
     Serial.begin(9600);
 
-    // that the arduino pulses int the frequency of the luefter
-    TCCR1B = TCCR1B & B11111000 | B00000001;
+    {
+        // if it doesnt works just use uno
+        if (BOARD == "UNO") 
+        {
+            TCCR1B = TCCR1B & B11111000 | B00000001;
+        }
+        else if (BOARD == "MEGA") 
+        {
+            TCCR0B = TCCR0B & B11111000 | B00000001;
+        }
+        
+    }
 
     for (int i = 0; i < LUEFTER_COUNT; i++) {
         luefter_pins[i] = LUEFTER_STARTPIN + i;
