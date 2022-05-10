@@ -7,6 +7,7 @@ app = Flask(__name__)
 RETRIES = 5
 
 def open_port(ser_: serial.Serial):
+    ser.close()
     if not ser_.isOpen():
         print("opening the port")
         ser_.open()
@@ -51,7 +52,7 @@ with open("port.json", "r") as port_file:
     if port_data['timeout'] != -1:
         ser.timeout = port_data['timeout']
 
-    open_port(ser)
+    # open_port(ser)
 
 @app.route('/')
 def my_form():
@@ -62,7 +63,8 @@ def my_form_post():
     form = request.form
     for key in form:
         if key.isnumeric() and form[key].isnumeric():
-            set_luefter(ser, int(key), int(form[key]))
+            pass
+            # set_luefter(ser, int(key), int(form[key]))
 
     return render_template('index.html')
 
