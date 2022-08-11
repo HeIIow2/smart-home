@@ -23,6 +23,18 @@ Dies wird am Anfang des Programms in `MOTOR_COUNT` festgelegt.
 
 `move_abs(*int)` bewegt den Roboter auf eine absolute Position, `move_rel(*int)` auf eine relative Position (hier sind negative Werte valid).
 
+## Befehle
+
+Alle Befehle werden Seriell über USB versendet. Das erste Byte ist der Mode (get/set):
+ - 0x00 -> set
+ - 0xff -> get
+In beiden modes wird ein response code zurückgegeben, und wenn diese SUCCES ist, werden danach im mode get noch weitere daten zurückgegeben.
+
+---
+
+ - 0x00 01 -> goto absoulute position -> Bewegt den Robotter zu einer Absoluten position. Die weiteren Bytes sind die werte der einzelen Glieder.
+ - 0x00 02 -> goto relative position -> Bewegt den Robotter zu einer Relativen position. Die weiteren Bytes sind die werte der einzelen Glieder. Hier besteht jeder Wert aber aus 2 Bytes. Das erste sagt ob negativ oder positiv ist, 0x00 negativ, 0xff positiv, das zweite ist der Wert.
+
 
 ## Response Codes
 
@@ -32,3 +44,5 @@ Was diese beuten findet man unten:
  - 666 -> STARTED -> Das Programm ist bereit für Befehle
  - 202 -> SUCCES -> Der Befehl war erfolgreich 
  - 403 -> OUT OF BOUNDS -> Die angegebene Position ist auserhalb des erlaubten Wertebereichs
+ - 404 -> NOT FOUNT -> Der Befehl wurde nicht gefunden
+
