@@ -4,6 +4,9 @@ import json
 RETRIES = 5
 RESPONSE_CODE_LEN = 5
 
+# width 50
+# height 40
+
 
 def send(ser_: serial.Serial, msg: bytes):
     print(msg)
@@ -37,6 +40,9 @@ def move_absolute(positions: list):
     print(f"got: " + str(send(ser, msg)))
 
 def move_relative(positions: list):
+    if positions[0] > 255 or positions[1] > 255:
+        return
+
     mode = b'\x00'
     command = b'\x02'
 
@@ -60,10 +66,8 @@ with open("port.json", "r") as port_file:
         ser.timeout = port_data['timeout']
 
 if __name__ == '__main__':
-    move_absolute([90, 90])
-    while True:
-        for i in range(18):
-            move_relative([10, 10])
+    import time
 
-        for i in range(18):
-            move_relative([-10, -10])
+    move_absolute([50, 90])
+    time.sleep(1)
+    move_relative([0, -40])
